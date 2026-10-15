@@ -1,0 +1,14 @@
+{
+  "heartbeatUrl": "",
+  "projects": [
+    {
+      "path": "C:\\Users\\adamh\\VSCodeProjects\\Auto-OSBC",
+      "spawn": "worktree",
+      "permissionMode": "acceptEdits"
+    },
+    {
+      "path": "C:\\Users\\adamh\\VSCodeProjects\\obs",
+      "spawn": "same-dir"
+    }
+  ]
+}

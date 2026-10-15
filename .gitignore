@@ -15,3 +15,6 @@ desktop.ini
 # Editor
 .vscode/
 .idea/
+
+# Watchdog project list (may hold a heartbeat URL)
+rc-projects.json
