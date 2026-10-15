@@ -37,7 +37,12 @@ offline, and what keeps that from happening or brings it back:
      watchdog pings it every 5 minutes while online, and healthchecks.io emails
      you when the pings stop. That's how you learn the desktop is down before
      you need it.
-5. In an admin PowerShell in this folder:
+5. **Answer the first-run prompts by hand.** In each folder listed in
+   `rc-projects.json`, run `claude remote-control` once, answer `y` to
+   `Trust <directory>?` and `Enable Remote Control?`, then Ctrl+C. The
+   watchdog can't answer these prompts. A server stuck waiting at one looks
+   healthy to it, so nothing gets served.
+6. In an admin PowerShell in this folder:
    ```powershell
    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
    .\harden-windows.ps1
@@ -57,7 +62,8 @@ back as the same session on claude.ai. Start them from claude.ai/code or the
 Claude app: pick the desktop's server in the session list and start a new session.
 
 **For long or overnight work while you're away, start it from the watchdog's
-server, not the desktop app.**
+server, not the desktop app**, as long as your GUI tools work there (see test
+step 6).
 
 ## Before you leave
 
@@ -72,7 +78,24 @@ If it says a restart is pending, restart now while you're home.
    SSH works.
 3. On your phone, check that claude.ai/code lists the desktop's sessions with a
    green dot.
-4. Read the log: `%LOCALAPPDATA%\claude-rc-watchdog\watchdog.log`.
+4. Read the log: `%LOCALAPPDATA%\claude-rc-watchdog\watchdog.log`. It should
+   show one `started remote-control` line per project, not a new one every
+   30 seconds.
+5. About a minute after sign-in, check that each tracked server is still
+   the process the watchdog started, and that there's only one per folder:
+   ```powershell
+   Get-ChildItem $env:LOCALAPPDATA\claude-rc-watchdog\*.pid | ForEach-Object { Get-Process -Id (Get-Content $_) }
+   ```
+   If those PIDs are gone while claude windows are still open, `claude.exe`
+   is handing off to a child process. The watchdog would then keep starting
+   duplicate servers, so stop it (create the `paused` file) and tell Claude.
+6. In a session started from the watchdog's server, confirm your GUI
+   automation tools still work (MCP servers, computer use, anything
+   configured only in the desktop app). If they don't, keep that work in the
+   desktop app and rely on auto sign-in plus RustDesk to reopen it.
+7. Resume a session that's been idle for 10+ minutes and check that Claude
+   mentions the resume note. If it doesn't, the hook isn't firing on
+   resume. That's harmless, but then you have to give the reminder yourself.
 
 ## When a session goes offline anyway
 
